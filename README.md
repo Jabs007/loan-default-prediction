@@ -18,6 +18,9 @@ Financial institutions face significant challenges in assessing loan applicant r
 
 **Solution**: An end-to-end ML system that predicts loan default probability with transparent explanations, enabling data-driven lending decisions.
 
+## 🚀 Live Demo
+[https://loan-default-prediction-jabs007.streamlit.app](https://loan-default-prediction-jabs007.streamlit.app)
+
 ## 🚀 Key Features
 
 ### 📊 **Interactive Data Exploration**
@@ -82,7 +85,7 @@ loan-default-prediction/
 ### Quick Start
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/loan-default-prediction.git
+git clone https://github.com/Jabs007/loan-default-prediction.git
 cd loan-default-prediction
 
 # Create virtual environment
@@ -295,7 +298,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 ### Development Setup
 ```bash
 # Fork the repository
-git clone https://github.com/yourusername/loan-default-prediction.git
+git clone https://github.com/Jabs007/loan-default-prediction.git
 
 # Create feature branch
 git checkout -b feature/amazing-feature
@@ -367,14 +370,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 If you found this project helpful, please give it a star! ⭐
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/loan-default-prediction&type=Date)](https://star-history.com/#yourusername/loan-default-prediction&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=Jabs007/loan-default-prediction&type=Date)](https://star-history.com/#Jabs007/loan-default-prediction&Date)
 
 ## 📊 Project Stats
 
-![GitHub stars](https://img.shields.io/github/stars/yourusername/loan-default-prediction)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/loan-default-prediction)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/loan-default-prediction)
-![GitHub license](https://img.shields.io/github/license/yourusername/loan-default-prediction)
+![GitHub stars](https://img.shields.io/github/stars/Jabs007/loan-default-prediction)
+![GitHub forks](https://img.shields.io/github/forks/Jabs007/loan-default-prediction)
+![GitHub issues](https://img.shields.io/github/issues/Jabs007/loan-default-prediction)
+![GitHub license](https://img.shields.io/github/license/Jabs007/loan-default-prediction)
 
 ---
 
