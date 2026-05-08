@@ -1,5 +1,5 @@
 """
-Loan Default Prediction System - Main Streamlit Application
+Loan Risk Analyzer - Main Streamlit Application
 
 A comprehensive machine learning application for predicting loan defaults with:
 - Interactive data exploration
@@ -24,18 +24,18 @@ import os
 sys.path.append(str(Path(__file__).parent / 'src'))
 
 # Import our modules
-from data_utils import generate_sample_data, validate_loan_data, get_data_summary
-from preprocessing import create_preprocessing_pipeline, handle_missing_values, detect_outliers
-from feature_engineering import engineer_all_features
-from train import train_multiple_models, save_model, load_model
-from evaluate import calculate_classification_metrics, plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve
-from explainability import create_shap_explainer, plot_global_feature_importance, plot_local_prediction_explanation
-from predict import make_prediction, assess_risk, create_prediction_summary, display_prediction_results
+from src.data_utils import generate_sample_data, validate_loan_data, get_data_summary
+from src.preprocessing import create_preprocessing_pipeline, handle_missing_values, detect_outliers
+from src.feature_engineering import engineer_all_features
+from src.train import train_multiple_models, save_model, load_model
+from src.evaluate import calculate_classification_metrics, plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve
+from src.explainability import create_shap_explainer, plot_global_feature_importance, plot_local_prediction_explanation
+from src.predict import make_prediction, assess_risk, create_prediction_summary, display_prediction_results
 
 # Page configuration
 st.set_page_config(
-    page_title="🏦 Loan Default Prediction System",
-    page_icon="🏦",
+    page_title=":material/account_balance: Loan Risk Analyzer",
+    page_icon=":material/account_balance:",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -99,12 +99,12 @@ if 'y_test' not in st.session_state:
 # Sidebar
 with st.sidebar:
     st.image("https://img.icons8.com/fluency/96/bank-building.png", width=80)
-    st.title("🏦 Loan Default Prediction")
+    st.title(":material/account_balance: Loan Default Prediction")
     
     st.markdown("---")
     
     # Data source selection
-    st.subheader("📊 Data Source")
+    st.subheader(":material/analytics: Data Source")
     data_source = st.radio(
         "Choose data source:",
         ["Sample Data", "Upload CSV", "Use Saved Data"]
@@ -117,7 +117,7 @@ with st.sidebar:
                 df = generate_sample_data(n_samples=n_samples, random_state=42)
                 st.session_state.df = df
                 st.session_state.data_loaded = True
-                st.success(f"✅ Generated {len(df)} samples")
+                st.success(f":material/check_circle: Generated {len(df)} samples")
     
     elif data_source == "Upload CSV":
         uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
@@ -128,14 +128,14 @@ with st.sidebar:
                 if validation_results['is_valid']:
                     st.session_state.df = df
                     st.session_state.data_loaded = True
-                    st.success("✅ Data uploaded successfully")
+                    st.success(":material/check_circle: Data uploaded successfully")
                 else:
-                    st.error("❌ Data validation failed")
+                    st.error(":material/cancel: Data validation failed")
                     if validation_results['errors']:
                         for error in validation_results['errors']:
                             st.write(f"- {error}")
             except Exception as e:
-                st.error(f"❌ Failed to load file: {str(e)}")
+                st.error(f":material/cancel: Failed to load file: {str(e)}")
     
     elif data_source == "Use Saved Data":
         data_path = st.text_input("Data file path:", "data/processed/loan_data_engineered.csv")
@@ -144,15 +144,15 @@ with st.sidebar:
                 df = pd.read_csv(data_path)
                 st.session_state.df = df
                 st.session_state.data_loaded = True
-                st.success("✅ Data loaded successfully")
+                st.success(":material/check_circle: Data loaded successfully")
             except Exception as e:
-                st.error(f"❌ Failed to load data: {str(e)}")
+                st.error(f":material/cancel: Failed to load data: {str(e)}")
     
     st.markdown("---")
     
     # Model training section
     if st.session_state.data_loaded:
-        st.subheader("🤖 Model Training")
+        st.subheader(":material/smart_toy: Model Training")
         
         models_to_train = st.multiselect(
             "Select models to train:",
@@ -195,14 +195,14 @@ with st.sidebar:
                     st.session_state.y_test = y_test
                     st.session_state.models_trained = True
                     
-                    st.success("✅ Models trained successfully!")
+                    st.success(":material/check_circle: Models trained successfully!")
                     
                 except Exception as e:
-                    st.error(f"❌ Training failed: {str(e)}")
+                    st.error(f":material/cancel: Training failed: {str(e)}")
         
         # Model loading section
         st.markdown("---")
-        st.subheader("📁 Load Saved Models")
+        st.subheader(":material/folder: Load Saved Models")
         
         if st.button("Load Pre-trained Models"):
             try:
@@ -221,26 +221,26 @@ with st.sidebar:
                 if models:
                     st.session_state.models = models
                     st.session_state.models_trained = True
-                    st.success("✅ Models loaded successfully!")
+                    st.success(":material/check_circle: Models loaded successfully!")
                 else:
-                    st.warning("⚠️ No saved models found")
+                    st.warning(":material/warning: No saved models found")
                     
             except Exception as e:
-                st.error(f"❌ Failed to load models: {str(e)}")
+                st.error(f":material/cancel: Failed to load models: {str(e)}")
 
 # Main content area
 def main():
-    st.markdown('<div class="main-header">🏦 Loan Default Prediction System</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">Loan Risk Analyzer</div>', unsafe_allow_html=True)
     
     # Navigation tabs
-    tabs = st.tabs(["📊 EDA & Data Overview", "🤖 Model Performance", "🔮 Predictions", "📚 Documentation"])
+    tabs = st.tabs([":material/analytics: EDA & Data Overview", ":material/smart_toy: Model Performance", ":material/online_prediction: Predictions", ":material/menu_book: Documentation"])
     
     # Tab 1: EDA & Data Overview
     with tabs[0]:
-        st.markdown('<div class="section-header">📊 Exploratory Data Analysis</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">Exploratory Data Analysis</div>', unsafe_allow_html=True)
         
         if not st.session_state.data_loaded:
-            st.info("📋 Please load data first using the sidebar")
+            st.info(":material/list_alt: Please load data first using the sidebar")
         else:
             df = st.session_state.df
             
@@ -260,15 +260,15 @@ def main():
                 st.metric("Missing Values", df.isnull().sum().sum())
             
             # Data preview
-            st.subheader("📝 Data Preview")
+            st.subheader(":material/edit_document: Data Preview")
             st.dataframe(df.head(10))
             
             # Statistical summary
-            st.subheader("📈 Statistical Summary")
+            st.subheader(":material/trending_up: Statistical Summary")
             st.dataframe(df.describe())
             
             # Default distribution
-            st.subheader("🎯 Target Variable Distribution")
+            st.subheader(":material/my_location: Target Variable Distribution")
             col1, col2 = st.columns(2)
             
             with col1:
@@ -292,16 +292,16 @@ def main():
                     st.plotly_chart(fig, use_container_width=True)
             
             # Correlation analysis
-            st.subheader("🔗 Correlation Analysis")
+            st.subheader(":material/link: Correlation Analysis")
             if len(numerical_cols) > 1:
                 correlation_matrix = df[numerical_cols + ['default']].corr()
                 fig = px.imshow(correlation_matrix, text_auto=True, aspect="auto",
                               title='Feature Correlation Matrix',
-                              color_continuous_scale='RdBu_r', zmid=0)
+                              color_continuous_scale='RdBu_r')
                 st.plotly_chart(fig, use_container_width=True)
             
             # Default rate by features
-            st.subheader("📊 Default Rate Analysis")
+            st.subheader(":material/analytics: Default Rate Analysis")
             
             col1, col2 = st.columns(2)
             
@@ -335,10 +335,10 @@ def main():
     
     # Tab 2: Model Performance
     with tabs[1]:
-        st.markdown('<div class="section-header">🤖 Model Performance</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">Model Performance</div>', unsafe_allow_html=True)
         
         if not st.session_state.models_trained:
-            st.info("🤖 Please train models first using the sidebar")
+            st.info(":material/smart_toy: Please train models first using the sidebar")
         else:
             models = st.session_state.models
             X_test = st.session_state.X_test
@@ -353,7 +353,7 @@ def main():
             
             if selected_models:
                 # Performance metrics
-                st.subheader("📊 Performance Metrics")
+                st.subheader(":material/analytics: Performance Metrics")
                 
                 metrics_df = []
                 for model_name in selected_models:
@@ -404,7 +404,7 @@ def main():
                     st.plotly_chart(fig, use_container_width=True)
                 
                 # Feature importance
-                st.subheader("🔍 Feature Importance")
+                st.subheader(":material/search: Feature Importance")
                 
                 selected_model_fi = st.selectbox("Select model for feature importance:", 
                                                [m for m in selected_models if hasattr(models[m], 'feature_importances_')])
@@ -425,10 +425,10 @@ def main():
     
     # Tab 3: Predictions
     with tabs[2]:
-        st.markdown('<div class="section-header">🔮 Real-time Predictions</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">Real-time Predictions</div>', unsafe_allow_html=True)
         
         if not st.session_state.models_trained:
-            st.info("🤖 Please train models first using the sidebar")
+            st.info(":material/smart_toy: Please train models first using the sidebar")
         else:
             # Model selection
             selected_model = st.selectbox("Select model for prediction:", list(models.keys()))
@@ -437,7 +437,7 @@ def main():
             input_method = st.radio("Choose input method:", ["Manual Input", "Upload CSV", "Use Test Sample"])
             
             if input_method == "Manual Input":
-                st.subheader("📝 Enter Applicant Information")
+                st.subheader(":material/edit_document: Enter Applicant Information")
                 
                 col1, col2 = st.columns(2)
                 
@@ -454,7 +454,7 @@ def main():
                                               ["debt_consolidation", "home_improvement", "credit_card", "major_purchase"])
                     home_ownership = st.selectbox("Home Ownership", ["rent", "own", "mortgage"])
                 
-                if st.button("🔮 Make Prediction"):
+                if st.button(":material/online_prediction: Make Prediction"):
                     # Create input dataframe
                     input_data = pd.DataFrame({
                         'credit_score': [credit_score],
@@ -482,7 +482,7 @@ def main():
                         
                         # SHAP explanation
                         if st.checkbox("Show SHAP Explanation"):
-                            st.subheader("🧠 SHAP Explanation")
+                            st.subheader(":material/psychology: SHAP Explanation")
                             
                             # Create SHAP explainer
                             explainer = create_shap_explainer(model, st.session_state.X_train)
@@ -499,7 +499,7 @@ def main():
                                 st.plotly_chart(fig, use_container_width=True)
             
             elif input_method == "Upload CSV":
-                st.subheader("📁 Upload Batch Data")
+                st.subheader(":material/folder: Upload Batch Data")
                 uploaded_file = st.file_uploader("Choose a CSV file for batch predictions", type="csv")
                 
                 if uploaded_file is not None:
@@ -508,7 +508,7 @@ def main():
                         st.write("Uploaded data preview:")
                         st.dataframe(batch_data.head())
                         
-                        if st.button("🔮 Batch Predict"):
+                        if st.button(":material/online_prediction: Batch Predict"):
                             # Apply feature engineering
                             batch_engineered = engineer_all_features(batch_data)
                             X_batch = batch_engineered.drop('default', axis=1) if 'default' in batch_engineered.columns else batch_engineered
@@ -537,22 +537,22 @@ def main():
                                 # Download results
                                 csv = results_df.to_csv(index=False)
                                 st.download_button(
-                                    label="📥 Download Results",
+                                    label=":material/download: Download Results",
                                     data=csv,
                                     file_name="loan_predictions.csv",
                                     mime="text/csv"
                                 )
                     
                     except Exception as e:
-                        st.error(f"❌ Failed to process file: {str(e)}")
+                        st.error(f":material/cancel: Failed to process file: {str(e)}")
             
             elif input_method == "Use Test Sample":
-                st.subheader("🎲 Use Test Sample")
+                st.subheader(":material/casino: Use Test Sample")
                 
                 if st.session_state.X_test is not None:
                     sample_idx = st.slider("Select test sample:", 0, len(st.session_state.X_test) - 1, 0)
                     
-                    if st.button("🔮 Predict Selected Sample"):
+                    if st.button(":material/online_prediction: Predict Selected Sample"):
                         # Get test sample
                         X_sample = st.session_state.X_test.iloc[sample_idx:sample_idx + 1]
                         y_true = st.session_state.y_test.iloc[sample_idx]
@@ -570,7 +570,7 @@ def main():
                             
                             # SHAP explanation
                             if st.checkbox("Show SHAP Explanation"):
-                                st.subheader("🧠 SHAP Explanation")
+                                st.subheader(":material/psychology: SHAP Explanation")
                                 
                                 # Create SHAP explainer
                                 explainer = create_shap_explainer(model, st.session_state.X_train)
@@ -588,14 +588,14 @@ def main():
     
     # Tab 4: Documentation
     with tabs[3]:
-        st.markdown('<div class="section-header">📚 Documentation & Help</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">Documentation & Help</div>', unsafe_allow_html=True)
         
         st.markdown("""
-        ## 🏦 Loan Default Prediction System
+        ## :material/account_balance: Loan Risk Analyzer
         
         This is a comprehensive machine learning application for predicting loan defaults, designed for production use in financial institutions.
         
-        ### 🎯 Business Problem
+        ### :material/my_location: Business Problem
         
         **Problem**: Financial institutions need to assess the risk of loan applicants defaulting on their loans to make informed lending decisions.
         
@@ -607,7 +607,7 @@ def main():
         - Ensure fair and consistent lending decisions
         - Meet regulatory requirements for explainable AI
         
-        ### 🛠️ Technical Architecture
+        ### :material/build: Technical Architecture
         
         **Data Pipeline**:
         1. Data ingestion (CSV upload or sample data generation)
@@ -630,7 +630,7 @@ def main():
         - Global feature importance
         - Local prediction explanations
         
-        ### 📊 How to Use This Application
+        ### :material/analytics: How to Use This Application
         
         **1. Data Loading** (Sidebar):
         - Generate sample data for testing
@@ -658,7 +658,7 @@ def main():
         - Use test samples for validation
         - View SHAP explanations for transparency
         
-        ### 🔧 Technical Requirements
+        ### :material/handyman: Technical Requirements
         
         **Python Libraries**:
         - pandas, numpy (data manipulation)
@@ -673,7 +673,7 @@ def main():
         - 4GB+ RAM recommended
         - Modern web browser
         
-        ### 🚀 Deployment Options
+        ### :material/rocket_launch: Deployment Options
         
         **Streamlit Cloud** (Recommended):
         - Free hosting for public repositories
@@ -689,7 +689,7 @@ def main():
         - Consistent environment
         - Easy scaling and management
         
-        ### 📈 Model Performance Expectations
+        ### :material/trending_up: Model Performance Expectations
         
         **Typical Results** (with sample data):
         - ROC-AUC: 0.85-0.95
@@ -703,7 +703,7 @@ def main():
         - Model hyperparameter tuning
         - Class imbalance handling
         
-        ### 🔍 Explainability Features
+        ### :material/search: Explainability Features
         
         **SHAP Integration**:
         - Global feature importance across all predictions
@@ -717,7 +717,7 @@ def main():
         - Model debugging and improvement
         - Risk factor identification
         
-        ### 🛡️ Risk Management
+        ### :material/shield: Risk Management
         
         **Risk Categories**:
         - **Low Risk** (0-20%): Recommend approval
@@ -731,7 +731,7 @@ def main():
         - Threshold-based decision making
         - Customizable risk parameters
         
-        ### 🔮 Future Enhancements
+        ### :material/online_prediction: Future Enhancements
         
         **Planned Features**:
         - Real-time model monitoring
@@ -747,7 +747,7 @@ def main():
         - Deep learning models
         - Cross-validation enhancements
         
-        ### 📞 Support & Contact
+        ### :material/phone: Support & Contact
         
         **For Questions**:
         - Check the GitHub repository for issues

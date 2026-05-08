@@ -1,24 +1,24 @@
 # Core Data Science Libraries
-pandas==2.1.4
-numpy==1.24.3
-scikit-learn==1.3.2
+pandas>=2.1.4
+numpy>=1.26.0
+scikit-learn>=1.3.2
 
 # Machine Learning
-xgboost==2.0.3
+xgboost>=2.0.3
 
 # Visualization
-plotly==5.17.0
-matplotlib==3.8.2
-seaborn==0.13.0
+plotly>=5.17.0
+matplotlib>=3.8.2
+seaborn>=0.13.0
 
 # Dashboard
-streamlit==1.29.0
+streamlit>=1.29.0
 
 # Model Persistence
-joblib==1.3.2
+joblib>=1.3.2
 
 # Explainable AI
-shap==0.44.0
+shap>=0.44.0
 
 # Optional Libraries (uncomment if needed)
 # optuna==3.4.0

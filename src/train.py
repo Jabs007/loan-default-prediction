@@ -65,7 +65,7 @@ def train_logistic_regression(X_train: np.ndarray, y_train: np.ndarray,
         LogisticRegression: Trained model
     """
     
-    st.header("🎯 Training Logistic Regression")
+    st.header(":material/my_location: Training Logistic Regression")
     
     if hyperparameter_tuning:
         # Define parameter grid
@@ -186,7 +186,7 @@ def train_xgboost(X_train: np.ndarray, y_train: np.ndarray,
         xgb.XGBClassifier: Trained model
     """
     
-    st.header("🚀 Training XGBoost")
+    st.header(":material/rocket_launch: Training XGBoost")
     
     # Calculate scale_pos_weight for imbalanced data
     scale_pos_weight = (len(y_train) - sum(y_train)) / sum(y_train)
@@ -268,13 +268,73 @@ def train_all_models(X_train: np.ndarray, y_train: np.ndarray,
             try:
                 model = model_training_functions[model_name](X_train, y_train, hyperparameter_tuning)
                 trained_models[model_name] = model
-                st.success(f"✅ Successfully trained {model_name}")
+                st.success(f":material/check_circle: Successfully trained {model_name}")
             except Exception as e:
-                st.error(f"❌ Failed to train {model_name}: {str(e)}")
+                st.error(f":material/cancel: Failed to train {model_name}: {str(e)}")
         else:
-            st.warning(f"⚠️ Unknown model: {model_name}")
+            st.warning(f":material/warning: Unknown model: {model_name}")
     
     return trained_models
+
+def train_multiple_models(X: pd.DataFrame, y: pd.Series, preprocessor: Any, 
+                         models_to_train: list = ["Logistic Regression", "Random Forest", "XGBoost"],
+                         hyperparameter_tuning: bool = False) -> Tuple:
+    """
+    Train multiple models with preprocessing.
+    
+    Args:
+        X: Input features
+        y: Target variable
+        preprocessor: Scikit-learn preprocessing pipeline or ColumnTransformer
+        models_to_train: List of model names to train
+        
+    Returns:
+        Tuple: (models_dict, X_train_processed, X_test_processed, y_train, y_test)
+    """
+    st.info("Applying preprocessing and splitting data...")
+    
+    # Map model names to internal names
+    model_name_mapping = {
+        "Logistic Regression": "logistic_regression",
+        "Random Forest": "random_forest",
+        "XGBoost": "xgboost"
+    }
+    
+    mapped_models = [model_name_mapping.get(m, m.lower().replace(" ", "_")) for m in models_to_train]
+    
+    # Split data
+    X_train, X_test, y_train, y_test = split_data(X, y)
+    
+    # Apply preprocessing
+    with st.spinner("Preprocessing features..."):
+        X_train_processed = preprocessor.fit_transform(X_train)
+        X_test_processed = preprocessor.transform(X_test)
+        
+        # Try to maintain DataFrame format if possible (for SHAP)
+        try:
+            if hasattr(preprocessor, 'get_feature_names_out'):
+                feature_names = preprocessor.get_feature_names_out()
+                X_train_processed = pd.DataFrame(X_train_processed, columns=feature_names)
+                X_test_processed = pd.DataFrame(X_test_processed, columns=feature_names)
+        except Exception as e:
+            st.warning(f"Could not extract feature names: {e}")
+            X_train_processed = pd.DataFrame(X_train_processed)
+            X_test_processed = pd.DataFrame(X_test_processed)
+            
+    # Train models
+    models_dict = train_all_models(X_train_processed, y_train, mapped_models, hyperparameter_tuning=hyperparameter_tuning)
+    
+    # Map keys back to original names
+    reverse_mapping = {v: k for k, v in model_name_mapping.items()}
+    final_models = {reverse_mapping.get(k, k): v for k, v in models_dict.items()}
+    
+    # Reset index for y to match X's indices
+    if isinstance(y_train, pd.Series):
+        y_train = y_train.reset_index(drop=True)
+    if isinstance(y_test, pd.Series):
+        y_test = y_test.reset_index(drop=True)
+        
+    return final_models, X_train_processed, X_test_processed, y_train, y_test
 
 def save_model(model: Any, model_path: str, model_name: str = "model") -> None:
     """
@@ -289,9 +349,9 @@ def save_model(model: Any, model_path: str, model_name: str = "model") -> None:
     try:
         Path(model_path).parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(model, model_path)
-        st.success(f"💾 Saved {model_name} model to {model_path}")
+        st.success(f":material/save: Saved {model_name} model to {model_path}")
     except Exception as e:
-        st.error(f"❌ Failed to save {model_name}: {str(e)}")
+        st.error(f":material/cancel: Failed to save {model_name}: {str(e)}")
 
 def load_model(model_path: str) -> Any:
     """
@@ -306,10 +366,10 @@ def load_model(model_path: str) -> Any:
     
     try:
         model = joblib.load(model_path)
-        st.success(f"📂 Loaded model from {model_path}")
+        st.success(f":material/folder_open: Loaded model from {model_path}")
         return model
     except Exception as e:
-        st.error(f"❌ Failed to load model from {model_path}: {str(e)}")
+        st.error(f":material/cancel: Failed to load model from {model_path}: {str(e)}")
         return None
 
 def get_model_info(model: Any) -> Dict[str, Any]:

@@ -7,7 +7,7 @@ risk assessment functionality.
 
 import pandas as pd
 import numpy as np
-from typing import Dict, Any, Optional, Union
+from typing import Dict, Any, Optional, Union, List
 import streamlit as st
 import joblib
 from pathlib import Path
@@ -66,7 +66,7 @@ def make_prediction(model: Any, X: np.ndarray,
         return results
         
     except Exception as e:
-        st.error(f"❌ Prediction failed: {str(e)}")
+        st.error(f":material/cancel: Prediction failed: {str(e)}")
         return None
 
 def assess_risk(probability: float, thresholds: Dict[str, float] = None) -> Dict[str, Any]:
@@ -203,6 +203,15 @@ def create_prediction_summary(prediction_results: Dict[str, Any],
                 risk_factors['debt_to_income'] = 'medium'
             else:
                 risk_factors['debt_to_income'] = 'low'
+
+        # Interest rate risk
+        if 'interest_rate' in sample_features:
+            if sample_features['interest_rate'] > 15:
+                risk_factors['interest_rate'] = 'high'
+            elif sample_features['interest_rate'] > 10:
+                risk_factors['interest_rate'] = 'medium'
+            else:
+                risk_factors['interest_rate'] = 'low'
         
         summary['risk_factors'] = risk_factors
     
@@ -223,9 +232,9 @@ def display_prediction_results(summary: Dict[str, Any],
     
     with col1:
         if summary['prediction'] == 1:
-            st.error("🚨 **DEFAULT PREDICTED**")
+            st.error(":material/error: **DEFAULT PREDICTED**")
         else:
-            st.success("✅ **NO DEFAULT PREDICTED**")
+            st.success(":material/check_circle: **NO DEFAULT PREDICTED**")
     
     with col2:
         risk_level = summary['risk_assessment']['risk_level']
@@ -245,7 +254,7 @@ def display_prediction_results(summary: Dict[str, Any],
         st.metric("Default Probability", f"{prob_default:.1%}")
     
     # Detailed information
-    st.subheader("📊 Prediction Details")
+    st.subheader(":material/analytics: Prediction Details")
     
     col1, col2 = st.columns(2)
     
@@ -257,11 +266,11 @@ def display_prediction_results(summary: Dict[str, Any],
         st.write("**Recommendation:**")
         recommendation = summary['risk_assessment']['recommendation']
         if recommendation == 'APPROVE':
-            st.success(f"✅ {recommendation.replace('_', ' ')}")
+            st.success(f":material/check_circle: {recommendation.replace('_', ' ')}")
         elif recommendation == 'REJECT':
-            st.error(f"❌ {recommendation.replace('_', ' ')}")
+            st.error(f":material/cancel: {recommendation.replace('_', ' ')}")
         else:
-            st.warning(f"⚠️ {recommendation.replace('_', ' ')}")
+            st.warning(f":material/warning: {recommendation.replace('_', ' ')}")
     
     with col2:
         st.write("**Confidence:**")
@@ -273,7 +282,7 @@ def display_prediction_results(summary: Dict[str, Any],
     
     # Feature details
     if show_features and 'features' in summary:
-        st.subheader("🔍 Feature Details")
+        st.subheader(":material/search: Feature Details")
         
         features_df = pd.DataFrame([
             {'Feature': k, 'Value': v} for k, v in summary['features'].items()
@@ -285,11 +294,11 @@ def display_prediction_results(summary: Dict[str, Any],
             st.write("**Key Risk Factors:**")
             for factor, level in summary['risk_factors'].items():
                 if level == 'poor' or level == 'high':
-                    st.write(f"🔴 {factor}: {level}")
+                    st.write(f":material/error: {factor}: {level}")
                 elif level == 'fair' or level == 'medium':
-                    st.write(f"🟡 {factor}: {level}")
+                    st.write(f":material/warning: {factor}: {level}")
                 else:
-                    st.write(f"🟢 {factor}: {level}")
+                    st.write(f":material/check_circle: {factor}: {level}")
 
 def batch_predict(models: Dict[str, Any], X: np.ndarray,
                 feature_names: List[str]) -> pd.DataFrame:
@@ -339,9 +348,9 @@ def save_prediction_results(results: Dict[str, Any], path: str) -> None:
     try:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(results, path)
-        st.success(f"💾 Saved prediction results to {path}")
+        st.success(f":material/save: Saved prediction results to {path}")
     except Exception as e:
-        st.error(f"❌ Failed to save prediction results: {str(e)}")
+        st.error(f":material/cancel: Failed to save prediction results: {str(e)}")
 
 def load_prediction_results(path: str) -> Optional[Dict[str, Any]]:
     """
@@ -356,10 +365,10 @@ def load_prediction_results(path: str) -> Optional[Dict[str, Any]]:
     
     try:
         results = joblib.load(path)
-        st.success(f"📂 Loaded prediction results from {path}")
+        st.success(f":material/folder_open: Loaded prediction results from {path}")
         return results
     except Exception as e:
-        st.error(f"❌ Failed to load prediction results: {str(e)}")
+        st.error(f":material/cancel: Failed to load prediction results: {str(e)}")
         return None
 
 def create_prediction_api(model: Any, preprocessor: Any = None) -> callable:

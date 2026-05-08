@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from typing import List, Dict, Optional
 import math
+import streamlit as st
 
 def create_financial_ratios(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -128,7 +129,7 @@ def create_employment_features(df: pd.DataFrame) -> pd.DataFrame:
         
         # Income stability proxy (employment length * income)
         if 'income' in df_emp.columns:
-            df_emp['income_stability_proxy'] = df_emp['employment_length'] * np.log(df_emp['income'])
+            df_emp['income_stability_proxy'] = df_emp['employment_length'] * np.log1p(df_emp['income'])
     
     # 2. Career Stage Indicator
     if 'age' in df_emp.columns and 'employment_length' in df_emp.columns:
@@ -335,7 +336,7 @@ def create_aggregate_features(df: pd.DataFrame) -> pd.DataFrame:
     
     if 'income' in df_agg.columns:
         # Income level (normalize to 0-1)
-        income_health = np.minimum(1.0, (np.log(df_agg['income']) - 9) / 3.0)
+        income_health = np.minimum(1.0, (np.log1p(df_agg['income']) - 9) / 3.0)
         health_components.append(income_health)
     
     if 'employment_length' in df_agg.columns:
@@ -413,5 +414,8 @@ def engineer_all_features(df: pd.DataFrame) -> pd.DataFrame:
     new_features = final_features - original_features
     
     st.success(f"Feature engineering complete! Added {new_features} new features ({final_features} total)")
+    
+    # Replace infinite values with NaN to prevent imputation errors
+    df_engineered = df_engineered.replace([np.inf, -np.inf], np.nan)
     
     return df_engineered

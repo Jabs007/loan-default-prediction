@@ -30,7 +30,7 @@ def create_shap_explainer(model: Any, X_train: np.ndarray,
         shap.Explainer: SHAP explainer object
     """
     
-    st.header("🧠 Creating SHAP Explainer")
+    st.header(":material/psychology: Creating SHAP Explainer")
     
     try:
         # Determine explainer type based on model
@@ -38,20 +38,20 @@ def create_shap_explainer(model: Any, X_train: np.ndarray,
             # Tree-based models
             if hasattr(model, 'estimators_'):
                 explainer = shap.TreeExplainer(model)
-                st.success("✅ Created TreeExplainer for tree-based model")
+                st.success(":material/check_circle: Created TreeExplainer for tree-based model")
             else:
                 # General models with predict_proba
                 explainer = shap.KernelExplainer(model.predict_proba, X_train[:100])  # Use subset for speed
-                st.success("✅ Created KernelExplainer for general model")
+                st.success(":material/check_circle: Created KernelExplainer for general model")
         else:
             # Models without predict_proba
             explainer = shap.KernelExplainer(model.predict, X_train[:100])
-            st.success("✅ Created KernelExplainer")
+            st.success(":material/check_circle: Created KernelExplainer")
         
         return explainer
         
     except Exception as e:
-        st.error(f"❌ Failed to create SHAP explainer: {str(e)}")
+        st.error(f":material/cancel: Failed to create SHAP explainer: {str(e)}")
         return None
 
 def calculate_shap_values(explainer: shap.Explainer, X_test: np.ndarray,
@@ -89,11 +89,11 @@ def calculate_shap_values(explainer: shap.Explainer, X_test: np.ndarray,
             # For KernelExplainer
             shap_values = explainer.shap_values(X_sample)
         
-        st.success(f"✅ Calculated SHAP values for {len(X_sample)} samples")
+        st.success(f":material/check_circle: Calculated SHAP values for {len(X_sample)} samples")
         return shap_values, X_sample
         
     except Exception as e:
-        st.error(f"❌ Failed to calculate SHAP values: {str(e)}")
+        st.error(f":material/cancel: Failed to calculate SHAP values: {str(e)}")
         return None, X_sample
 
 def plot_global_feature_importance(shap_values: np.ndarray, 
@@ -225,7 +225,7 @@ def create_interactive_explanation_dashboard(shap_values: np.ndarray,
         model_name: Name of the model
     """
     
-    st.header(f"🔍 SHAP Explainability Dashboard - {model_name}")
+    st.header(f":material/search: SHAP Explainability Dashboard - {model_name}")
     
     # Global Feature Importance
     st.subheader("🌍 Global Feature Importance")
@@ -235,7 +235,7 @@ def create_interactive_explanation_dashboard(shap_values: np.ndarray,
     st.plotly_chart(global_fig, use_container_width=True)
     
     # Summary plot
-    st.subheader("📊 SHAP Summary Plot")
+    st.subheader(":material/analytics: SHAP Summary Plot")
     st.markdown("This shows the distribution of SHAP values for each feature.")
     
     try:
@@ -284,7 +284,7 @@ def create_interactive_explanation_dashboard(shap_values: np.ndarray,
     st.plotly_chart(local_fig, use_container_width=True)
     
     # Feature interaction analysis
-    st.subheader("🔗 Feature Interactions")
+    st.subheader(":material/link: Feature Interactions")
     st.markdown("Explore how features interact with each other.")
     
     # Select two features for interaction plot
@@ -371,9 +371,9 @@ def save_explainer(explainer: shap.Explainer, path: str) -> None:
     
     try:
         joblib.dump(explainer, path)
-        st.success(f"💾 Saved SHAP explainer to {path}")
+        st.success(f":material/save: Saved SHAP explainer to {path}")
     except Exception as e:
-        st.error(f"❌ Failed to save explainer: {str(e)}")
+        st.error(f":material/cancel: Failed to save explainer: {str(e)}")
 
 def load_explainer(path: str) -> Optional[shap.Explainer]:
     """
@@ -388,8 +388,8 @@ def load_explainer(path: str) -> Optional[shap.Explainer]:
     
     try:
         explainer = joblib.load(path)
-        st.success(f"📂 Loaded SHAP explainer from {path}")
+        st.success(f":material/folder_open: Loaded SHAP explainer from {path}")
         return explainer
     except Exception as e:
-        st.error(f"❌ Failed to load explainer: {str(e)}")
+        st.error(f":material/cancel: Failed to load explainer: {str(e)}")
         return None

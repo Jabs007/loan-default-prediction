@@ -13,6 +13,7 @@ from sklearn.impute import SimpleImputer
 from typing import Tuple, List, Optional
 import joblib
 from pathlib import Path
+import streamlit as st
 
 def create_preprocessing_pipeline(
     numerical_features: List[str], 
@@ -46,7 +47,7 @@ def create_preprocessing_pipeline(
     # Categorical pipeline
     categorical_pipeline = Pipeline([
         ('imputer', SimpleImputer(strategy='constant', fill_value='missing')),
-        ('onehot', OneHotEncoder(drop='first', sparse_output=False))
+        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))
     ])
     
     # Combine pipelines

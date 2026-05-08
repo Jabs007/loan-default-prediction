@@ -287,7 +287,7 @@ def display_metrics_summary(metrics: Dict[str, float], model_name: str = "Model"
         model_name: Name of the model
     """
     
-    st.subheader(f"📊 {model_name} Performance Metrics")
+    st.subheader(f":material/analytics: {model_name} Performance Metrics")
     
     # Create columns for metrics
     col1, col2, col3, col4, col5 = st.columns(5)
