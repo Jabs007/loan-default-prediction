@@ -180,53 +180,26 @@ st.markdown("""
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
-def generate_data(n=1500, seed=42):
+def load_data(n=2500, seed=42):
+    """Loads real sampled data from the processed CSV."""
     try:
-        # Load the real dataset sample extracted from raw data
         df = pd.read_csv("data/processed/real_sample.csv")
-        
-        # Calculate derived features used by the app
         df["loan_inc_ratio"] = (df["loan_amnt"] / df["annual_inc"]).round(4)
         df["int_inc_ratio"]  = ((df["int_rate"]/100)*df["loan_amnt"]/df["annual_inc"]).round(4)
-        
-        # Sample the requested amount if available
         if len(df) > n:
             df = df.sample(n=n, random_state=seed)
         return df
     except Exception as e:
-        # Fallback to mock data if real sample is missing
-        st.warning(f"Real data sample not found. Using fallback generator. Error: {e}")
-        rng = np.random.default_rng(seed)
-        df = pd.DataFrame({
-            "loan_amnt":   rng.integers(1000, 40000, n),
-            "int_rate":    rng.uniform(5, 30, n).round(2),
-            "annual_inc":  rng.integers(20000, 250000, n),
-            "dti":         rng.uniform(0, 40, n).round(2),
-            "emp_length":  rng.integers(0, 11, n),
-            "open_acc":    rng.integers(1, 30, n),
-            "revol_util":  rng.uniform(0, 100, n).round(2),
-            "pub_rec":     rng.choice([0,1,2,3], n, p=[0.80,0.12,0.05,0.03]),
-            "delinq_2yrs": rng.choice([0,1,2,3,4], n, p=[0.70,0.18,0.07,0.03,0.02]),
-        })
-        df["loan_inc_ratio"] = (df["loan_amnt"] / df["annual_inc"]).round(4)
-        df["int_inc_ratio"]  = ((df["int_rate"]/100)*df["loan_amnt"]/df["annual_inc"]).round(4)
-        log_odds = (
-            -3.5 + 0.04*df["int_rate"] + 0.05*df["dti"]
-            + 0.15*df["loan_inc_ratio"] + 0.6*df["pub_rec"]
-            + 0.3*df["delinq_2yrs"] + 0.005*df["revol_util"]
-            - 0.05*df["emp_length"] + rng.normal(0,.5,n)
-        )
-        prob = 1/(1+np.exp(-log_odds))
-        df["loan_status"] = (rng.uniform(0,1,n) < prob).astype(int)
-        return df
+        st.error(f"Critical Error: Real data sample not found. Please ensure 'data/processed/real_sample.csv' exists. {e}")
+        return pd.DataFrame()
 
 FEATURES = ["loan_amnt","int_rate","annual_inc","dti","emp_length",
             "open_acc","revol_util","pub_rec","delinq_2yrs",
             "loan_inc_ratio","int_inc_ratio"]
 
-@st.cache_resource(show_spinner="Training model…")
-def train(df_hash, model_name):
-    df = generate_data()
+@st.cache_resource(show_spinner="Training model on real data…")
+def train(df, model_name):
+    # Ensure we only use numeric features and the target
     X = df[FEATURES].values
     y = df["loan_status"].values
     X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
@@ -257,11 +230,11 @@ def train(df_hash, model_name):
 
 # ── Session state ─────────────────────────────────────────────────────────────
 if "tab" not in st.session_state:   st.session_state.tab = "home"
-if "df"  not in st.session_state:   st.session_state.df  = generate_data()
+if "df"  not in st.session_state:   st.session_state.df  = load_data()
 if "model_choice" not in st.session_state: st.session_state.model_choice = "XGBoost"
 
 df = st.session_state.df
-res = train(len(df), st.session_state.model_choice)
+res = train(df, st.session_state.model_choice)
 
 # ── Top nav ───────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -353,7 +326,7 @@ elif tab == "data":
     if data_source == "📊 Sample dataset":
         n = st.slider("Number of records", 500, 2500, 1500, step=100)
         if st.button("Load real dataset"):
-            st.session_state.df = generate_data(n)
+            st.session_state.df = load_data(n)
             st.success(f"✅ Loaded {n:,} records from real dataset")
             st.rerun()
         st.markdown(f"""
