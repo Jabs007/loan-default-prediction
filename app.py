@@ -35,7 +35,8 @@ st.set_page_config(
 st.markdown("""
 <style>
 /* ── Global reset ── */
-[data-testid="stAppViewContainer"] { background: #f4f6f8; }
+[data-testid="stAppViewContainer"] { background: #f4f6f8; color: #1a1a2e; }
+.stMarkdown, .stText, p, span, div { color: #1a1a2e; }
 [data-testid="stMainBlockContainer"] { max-width: 440px; padding: 0 0 80px; margin: 0 auto; }
 [data-testid="stHeader"] { display: none; }
 [data-testid="stSidebar"] { display: none; }
