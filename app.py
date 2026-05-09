@@ -198,10 +198,10 @@ FEATURES = ["loan_amnt","int_rate","annual_inc","dti","emp_length",
             "loan_inc_ratio","int_inc_ratio"]
 
 @st.cache_resource(show_spinner="Training model on real data…")
-def train(df, model_name):
+def train(_df, model_name, data_len):
     # Ensure we only use numeric features and the target
-    X = df[FEATURES].values
-    y = df["loan_status"].values
+    X = _df[FEATURES].values
+    y = _df["loan_status"].values
     X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
     if model_name == "XGBoost" and XGB_AVAILABLE:
         clf = XGBClassifier(n_estimators=200, max_depth=5, learning_rate=0.05,
@@ -234,7 +234,7 @@ if "df"  not in st.session_state:   st.session_state.df  = load_data()
 if "model_choice" not in st.session_state: st.session_state.model_choice = "XGBoost"
 
 df = st.session_state.df
-res = train(df, st.session_state.model_choice)
+res = train(df, st.session_state.model_choice, len(df))
 
 # ── Top nav ───────────────────────────────────────────────────────────────────
 st.markdown("""
