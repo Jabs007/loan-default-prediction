@@ -144,40 +144,44 @@ STRINGS = {
 
 # ── 3. PDF GENERATOR ────────────────────────────────────────────────────────
 def generate_pdf(data, result_text, tips, lang):
+    # Sanitize text to avoid FPDF encoding errors (replace em-dash, etc.)
+    def clean(t):
+        return str(t).replace("\u2014", "-").replace("\u2013", "-").replace("\u2019", "'").replace("\u201c", '"').replace("\u201d", '"')
+
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Helvetica", "B", 18)
-    pdf.cell(190, 15, "Loan Eligibility Summary", ln=True, align="C")
+    pdf.cell(190, 15, clean("Loan Eligibility Summary"), ln=True, align="C")
     pdf.set_font("Helvetica", "", 10)
-    pdf.cell(190, 10, f"Generated on {datetime.now().strftime('%d %b %Y %H:%M')}", ln=True, align="C")
+    pdf.cell(190, 10, clean(f"Generated on {datetime.now().strftime('%d %b %Y %H:%M')}"), ln=True, align="C")
     pdf.ln(10)
     
     # Inputs Table
     pdf.set_font("Helvetica", "B", 12)
-    pdf.cell(190, 10, "Your Information:", ln=True)
+    pdf.cell(190, 10, clean("Your Information:"), ln=True)
     pdf.set_font("Helvetica", "", 11)
     for k, v in data.items():
         if k in ["monthly_income", "loan_amnt", "monthly_debt"]:
-            pdf.cell(90, 8, f"{k.replace('_',' ').title()}:", border=1)
-            pdf.cell(100, 8, f"KSh {v:,.0f}", border=1, ln=True)
+            pdf.cell(90, 8, clean(f"{k.replace('_',' ').title()}:"), border=1)
+            pdf.cell(100, 8, clean(f"KSh {v:,.0f}"), border=1, ln=True)
     
     pdf.ln(10)
     pdf.set_font("Helvetica", "B", 14)
-    pdf.cell(190, 10, "Result:", ln=True)
+    pdf.cell(190, 10, clean("Result:"), ln=True)
     pdf.set_font("Helvetica", "B", 16)
-    pdf.cell(190, 15, result_text, ln=True, align="C")
+    pdf.cell(190, 15, clean(result_text), ln=True, align="C")
     
     pdf.ln(10)
     pdf.set_font("Helvetica", "B", 12)
-    pdf.cell(190, 10, "Recommended Next Steps:", ln=True)
+    pdf.cell(190, 10, clean("Recommended Next Steps:"), ln=True)
     pdf.set_font("Helvetica", "", 11)
     for tip in tips:
         pdf.set_x(10)
-        pdf.multi_cell(190, 8, f"- {tip}")
+        pdf.multi_cell(190, 8, clean(f"- {tip}"))
     
     pdf.ln(20)
     pdf.set_font("Helvetica", "I", 8)
-    pdf.cell(190, 10, "Disclaimer: This is an automated assessment for demonstration purposes. Not financial advice.", align="C")
+    pdf.cell(190, 10, clean("Disclaimer: This is an automated assessment for demonstration purposes. Not financial advice."), align="C")
     
     return bytes(pdf.output())
 
